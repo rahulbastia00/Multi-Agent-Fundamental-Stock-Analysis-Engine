@@ -1,130 +1,147 @@
-Financial Analysis Agent API
-A robust, scalable API for fetching, storing, and analyzing financial data. This project serves as the foundational data layer for a multi-agent system designed for automated stock analysis and insights.
 
-🚀 Features
-Automated Data Pipeline: Fetch historical and fundamental financial data from public sources.
 
-Persistent Caching: Stores financial statements in a PostgreSQL database to minimize redundant API calls and improve performance.
+# Multi-Agent Fundamental Stock Analysis Engine
 
-Scalable Architecture: Built with FastAPI and a modular, service-oriented structure for easy expansion.
+A scalable and automated financial data analysis engine designed to serve as the foundational data layer for a multi-agent system for automated stock analysis. This project provides a robust backend service for fetching, storing, and analyzing financial data from public sources.
 
-Vector Database Ready: Integrated with PGVector for future NLP and semantic search capabilities.
+[](https://opensource.org/licenses/MIT)
+[](https://www.google.com/search?q=https.shields.io/badge/python-3.9-blue.svg)
+[](https://www.docker.com/)
 
-Containerized: Fully containerized with Docker for consistent development and deployment environments.
+-----
 
-🛠️ Tech Stack
-Backend: Python, FastAPI
+## 🌟 Key Features
 
-Database: PostgreSQL, PGVector
+  * **🤖 Automated Data Pipeline:** Automatically fetches historical and fundamental financial data from public sources using `yfinance`.
+  * **⚡ Persistent Caching:** Stores financial statements and historical data in a PostgreSQL database to improve performance and reduce redundant API calls.
+  * **🚀 Scalable Architecture:** Built with FastAPI in a modular, service-oriented architecture, ensuring high performance and scalability.
+  * **🧠 Vector Database Ready:** Integrated with PGVector for future NLP and AI-powered capabilities, such as sentiment analysis and financial news embeddings.
+  * **🐳 Fully Containerized:** Comes with a complete Docker and Docker Compose setup for easy and consistent deployment.
 
-Data Libraries: yfinance, pandas
+-----
 
-ORM: SQLAlchemy
+## 🛠️ Tech Stack
 
-Validation: Pydantic
+  * **Backend:** Python, FastAPI
+  * **Database:** PostgreSQL, PGVector
+  * **Data Libraries:** yfinance, pandas
+  * **ORM:** SQLAlchemy
+  * **Validation:** Pydantic
+  * **Containerization:** Docker, Docker Compose
 
-Containerization: Docker, Docker Compose
+-----
 
-🏗️ Project Architecture
-The project follows a clean, scalable structure that separates concerns into distinct layers:
+## 🏗️ Project Architecture
 
-src/api/: Defines the API routers and endpoints.
+The project follows a clean, service-oriented architecture to separate concerns and improve maintainability.
 
-src/services/: Contains the core business logic (e.g., fetching data from yfinance).
+```
+src/
+├── api/          # API routers and endpoints
+├── services/     # Core business logic and services
+├── db/           # Database sessions, connections, and ORM models
+└── core/         # Application-level configuration
+```
 
-src/db/: Manages database sessions, connections, and ORM models (SQLAlchemy).
+-----
 
-src/core/: Handles application-level configuration and settings.
+## 🚀 Getting Started
 
-This modular design ensures that the application is maintainable and easy to extend with new features or data sources.
+Follow these steps to get the project up and running on your local machine.
 
-🏁 Getting Started
-Follow these instructions to set up the development environment on your local machine.
+### Prerequisites
 
-Prerequisites
-Python 3.9+
+  * Docker and Docker Compose
+  * Python 3.9+
+  * Poetry (for managing Python dependencies)
 
-Docker & Docker Compose
+### Installation
 
-Installation & Setup
-Clone the Repository
+1.  **Clone the repository:**
 
-git clone <your-repository-url>
-cd financial-agent
+    ```bash
+    git clone https://github.com/rahulbastia00/Multi-Agent-Fundamental-Stock-Analysis-Engine.git
+    cd Multi-Agent-Fundamental-Stock-Analysis-Engine
+    ```
 
-Configure Environment Variables
-Create a .env file in the project root by copying the example.
+2.  **Configure Environment Variables:**
+    Create a `.env` file in the root of the project and add the necessary database configuration. You can copy the example file:
 
-cp .env.example .env
+    ```bash
+    cp .env.example .env
+    ```
 
-Update the .env file with your database credentials and any necessary API keys. For local development, ensure POSTGRES_HOST is set to localhost.
+    Then, update the `.env` file with your database credentials.
 
-Launch the Database
-This command starts the PostgreSQL database container in the background.
+3.  **Launch the Database:**
+    Start the PostgreSQL database using Docker Compose:
 
-docker-compose up -d
+    ```bash
+    docker-compose up -d db
+    ```
 
-Set Up Python Environment
-Create and activate a virtual environment, then install the required packages.
+4.  **Set up the Python Environment and Install Dependencies:**
 
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+    ```bash
+    poetry install
+    ```
 
-Run the Application
-Start the FastAPI development server.
+5.  **Run the Application:**
 
-uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+    ```bash
+    poetry run uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    ```
 
-The API is now accessible at http://localhost:8000/docs.
+    The API will be available at `http://localhost:8000`.
 
-⚙️ API Usage
-Interact with the API using any HTTP client or the auto-generated Swagger documentation.
+-----
 
-Endpoints
-Health Check
+## 📈 API Usage
 
-GET /health
+The application provides the following API endpoints:
 
-Verifies that the API is running.
+  * **Health Check:**
+    `GET /health` - Checks the health of the application.
 
-Fetch & Store Financial Statements
+  * **Fetch and Store Financial Data:**
+    `POST /api/v1/data/fetch/{ticker}` - Fetches and stores financial statements for a given stock ticker.
 
-POST /api/v1/data/fetch/{ticker}
+  * **Get Historical Stock Data:**
+    `GET /api/v1/data/ohlcv/{ticker}` - Retrieves historical Open-High-Low-Close-Volume (OHLCV) data for a given ticker.
 
-Triggers the data pipeline to fetch and store the income statement, balance sheet, and cash flow for the specified stock ticker.
+You can access the interactive API documentation at `http://localhost:8000/docs`.
 
-Example:
+-----
 
-curl -X POST http://localhost:8000/api/v1/data/fetch/MSFT
+## 🚢 Deployment
 
-Get Historical OHLCV Data
+This application is designed to be deployed as a containerized service. You can build and run the Docker image using the following commands:
 
-GET /api/v1/data/ohlcv/{ticker}
+1.  **Build the Docker Image:**
 
-Retrieves historical Open-High-Low-Close-Volume data for the specified ticker.
+    ```bash
+    docker-compose build app
+    ```
 
-Example:
+2.  **Run the Application:**
 
-curl http://localhost:8000/api/v1/data/ohlcv/MSFT
+    ```bash
+    docker-compose up -d app
+    ```
 
-🚢 Deployment
-This application is designed for containerized deployment. The included Dockerfile builds a production-ready image using gunicorn as the web server. To build and run the application container, you would typically use a CI/CD pipeline or run the following commands:
+-----
 
-# Build the Docker image
-docker build -t financial-agent-api .
+## 🗺️ Roadmap
 
-# Run the container (example)
-docker run -d -p 8000:8000 --env-file .env --name api financial-agent-api
+This project is the first phase of a larger multi-agent system for stock analysis. Here is the planned roadmap:
 
-Note: In a real production environment, the database would be a managed service, and environment variables would be injected securely.
+  * **Phase 1.2:** Implement embedding and storage of financial news articles.
+  * **Phase 2:** Develop a sentiment analysis agent to analyze financial news.
+  * **Phase 3:** Introduce a quantitative analysis agent to perform calculations on the stored financial data.
+  * **Phase 4:** Create a master agent that orchestrates the other agents to provide a holistic stock analysis.
 
-🗺️ Roadmap
-[ ] Phase 1.2: Implement embedding and storage of financial news articles.
+-----
 
-[ ] Phase 2: Develop the first analysis agent to perform sentiment analysis on news.
+## 📄 License
 
-[ ] Phase 3: Introduce a second agent for quantitative analysis based on stored financial statements.
-
-📜 License
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for more details.
