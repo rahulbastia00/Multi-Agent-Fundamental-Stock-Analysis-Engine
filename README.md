@@ -142,6 +142,3 @@ This project is the first phase of a larger multi-agent system for stock analysi
 
 -----
 
-## 📄 License
-
-This project is licensed under the MIT License. See the [LICENSE](https://www.google.com/search?q=LICENSE) file for more details.
