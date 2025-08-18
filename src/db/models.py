@@ -13,3 +13,19 @@ class FinancialStatement(Base):
     data = Column(JSONB, nullable=False) # Store the entire statement as JSON
 
     __table_args__ = (UniqueConstraint('ticker', 'statement_type', 'period', name='_ticker_statement_period_uc'),)
+
+
+
+class OhlcvData(Base):
+    __tablename__ = "ohlcv_data"
+
+    id = Column(Integer, primary_key=True, index=True)
+    ticker = Column(String, index=True, nullable=False)
+    date = Column(Date, nullable=False)
+    open = Column(Float, nullable=False)
+    high = Column(Float, nullable=False)
+    low = Column(Float, nullable=False)
+    close = Column(Float, nullable=False)
+    volume = Column(Integer, nullable=False)
+
+    __table_args__ = (UniqueConstraint('ticker', 'date', name='_ticker_date_uc'),)

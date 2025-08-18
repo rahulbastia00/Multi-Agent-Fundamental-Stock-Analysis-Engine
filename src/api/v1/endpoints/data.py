@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from src.db.session import get_db
 from src.services import financial_data
+from src.db.session import get_db 
 
 router = APIRouter()
 
@@ -21,12 +22,14 @@ def fetch_financials(ticker: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/ohlcv/{ticker}")
-def get_ohlcv_data(ticker: str, period: str = "1y"):
+@router.get("/ohlcv/{ticker}")
+def get_ohlcv_data(ticker: str, period: str = "1y", db: Session = Depends(get_db)):
     """
-    Retrieves historical OHLCV data for a given ticker.
+    Retrieves and caches historical OHLCV data for a given ticker.
     """
     try:
-        data = financial_data.get_ohlcv(ticker, period)
+        # Pass the db session to the service function
+        data = financial_data.get_ohlcv(ticker, period, db)
         return data.to_dict(orient="index")
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Data not found for ticker {ticker}: {e}")
