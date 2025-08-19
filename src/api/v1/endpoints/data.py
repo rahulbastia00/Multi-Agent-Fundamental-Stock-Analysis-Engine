@@ -21,7 +21,7 @@ def fetch_financials(ticker: str, db: Session = Depends(get_db)):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/ohlcv/{ticker}")
+# @router.get("/ohlcv/{ticker}")
 @router.get("/ohlcv/{ticker}")
 def get_ohlcv_data(ticker: str, period: str = "1y", db: Session = Depends(get_db)):
     """
@@ -33,3 +33,16 @@ def get_ohlcv_data(ticker: str, period: str = "1y", db: Session = Depends(get_db
         return data.to_dict(orient="index")
     except Exception as e:
         raise HTTPException(status_code=404, detail=f"Data not found for ticker {ticker}: {e}")
+    
+@router.get("/earnings/{ticker}")
+def get_earnings_data(ticker: str, horizon: str = "3month"):
+    """
+    Retrieves the earnings calendar for a given ticker from Alpha Vantage.
+    """
+    try:
+        data = financial_data.get_earnings_calendar(ticker, horizon)
+        if "error" in data:
+            raise HTTPException(status_code=429, detail=data["error"])
+        return data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))

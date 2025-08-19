@@ -92,45 +92,78 @@ This modular design ensures **maintainability** and smooth **feature expansion**
 
 ## ⚙️ API Usage
 
-Interact via any HTTP client or **Swagger UI**.
+Interact with the API using any HTTP client or via **Swagger UI**.
+
+### 🔍 Start the Database
+
+Run PostgreSQL with Docker:
+
+```cmd
+docker-compose up -d
+```
+
+*This will start the database.*
 
 ### 🔍 Endpoints
 
-**Health Check**
+#### **Health Check**
 
 ```http
 GET /health
 ```
 
-* Verifies API status.
+* Verifies that the API is running.
 
-**Fetch & Store Financial Statements**
+#### **Fetch & Store Financial Statements**
 
 ```http
 POST /api/v1/data/fetch/{ticker}
 ```
 
-* Triggers pipeline for income, balance sheet, and cash flow data.
+* Triggers the pipeline to fetch and store income statements, balance sheets, and cash flow data.
 * Example:
 
   ```bash
   curl -X POST http://localhost:8000/api/v1/data/fetch/MSFT
   ```
 
-**Get Historical OHLCV Data**
+#### **Get Historical OHLCV Data**
 
 ```http
 GET /api/v1/data/ohlcv/{ticker}
 ```
 
-* Retrieves OHLCV time series.
+* Retrieves OHLCV (Open, High, Low, Close, Volume) time series data.
 * Example:
 
   ```bash
   curl http://localhost:8000/api/v1/data/ohlcv/MSFT
   ```
 
----
+### 🔍 Database Queries
+
+To connect to the database container:
+
+```bash
+docker ps
+docker exec -it financial_db psql -U user -d financial_data
+\dt
+```
+
+Run sample queries:
+
+```sql
+SELECT ticker, statement_type, period
+FROM financial_statements
+WHERE ticker = 'AAPL';
+
+SELECT *
+FROM ohlcv_data
+WHERE ticker = 'AAPL'
+ORDER BY date DESC
+LIMIT 5;
+```
+
 
 ## 🚢 Deployment
 
