@@ -29,7 +29,7 @@ def create_agent_executor():
     
     llm = ChatGroq(
         temperature=0.6,
-        model_name="openai/gpt-oss-120b",
+        model_name="llama3-8b-8192",
         groq_api_key=settings.GROQ_API_KEY
     )
     
