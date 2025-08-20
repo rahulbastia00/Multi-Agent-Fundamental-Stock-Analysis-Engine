@@ -1,4 +1,3 @@
-
 # These are the public-facing HTTP endpoints. They depend on 
 # the service layer to perform actions.
 

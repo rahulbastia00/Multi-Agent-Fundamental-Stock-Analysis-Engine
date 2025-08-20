@@ -7,7 +7,10 @@ from src.db import models
 from src.core.config import settings
 
 def fetch_and_store_statements(db: Session, ticker: str):
-    """Fetches and stores income statement, balance sheet, and cash flow for a ticker."""
+    """
+    Fetches and stores income statement, balance sheet, and cash flow for a ticker.
+    This function is idempotent and will skip records that already exist.
+    """
     stock = yf.Ticker(ticker)
     
     statement_map = {
@@ -16,27 +19,41 @@ def fetch_and_store_statements(db: Session, ticker: str):
         "cash_flow": stock.cashflow
     }
 
-    new_records = []
+    new_records_count = 0
     for statement_type, data_df in statement_map.items():
         if data_df.empty:
             continue
             
         data_df = data_df.T
         for period, statement_data in data_df.iterrows():
-            record_data = json.loads(statement_data.to_json())
+            record_date = period.date()
             
-            db_record = models.FinancialStatement(
-                ticker=ticker.upper(),
-                statement_type=statement_type,
-                period=period.date(),
-                data=record_data
-            )
-            
-            db.merge(db_record)
-            new_records.append(db_record)
+            # --- FIX: Check if the record already exists ---
+            exists = db.query(models.FinancialStatement).filter(
+                models.FinancialStatement.ticker == ticker.upper(),
+                models.FinancialStatement.statement_type == statement_type,
+                models.FinancialStatement.period == record_date
+            ).first()
 
-    db.commit()
-    return {"message": f"Successfully fetched and stored {len(new_records)} statements for {ticker}"}
+            # If it doesn't exist, create and add it
+            if not exists:
+                record_data = json.loads(statement_data.to_json())
+                
+                db_record = models.FinancialStatement(
+                    ticker=ticker.upper(),
+                    statement_type=statement_type,
+                    period=record_date,
+                    data=record_data
+                )
+                db.add(db_record)
+                new_records_count += 1
+
+    if new_records_count > 0:
+        db.commit()
+        return {"message": f"Successfully fetched and stored {new_records_count} new statements for {ticker}."}
+    else:
+        return {"message": f"All financial statements for {ticker} are already up-to-date."}
+
 
 def get_ohlcv(ticker: str, period: str = "1y", db: Session = None) -> pd.DataFrame:
     """Fetches OHLCV data and stores it in the database."""
@@ -63,26 +80,17 @@ def get_earnings_calendar(ticker: str, horizon: str = "3month") -> dict:
     """
     Fetches the earnings calendar for a given ticker from Alpha Vantage by reading the CSV endpoint.
     """
-    print("--- [DEBUG] Attempting to fetch earnings calendar from CSV endpoint ---")
-    
     api_key = settings.ALPHA_VANTAGE_API_KEY
     if not api_key or api_key == "YOUR_API_KEY_HERE":
-        print("--- [DEBUG] Alpha Vantage API key is missing. ---")
         return {"error": "Alpha Vantage API key is not configured."}
         
     try:
-        # Construct the API URL for the CSV data
         url = f"https://www.alphavantage.co/query?function=EARNINGS_CALENDAR&horizon={horizon}&apikey={api_key}&datatype=csv"
-        
-        # Use pandas to directly read the CSV data from the URL
         data_df = pd.read_csv(url)
         
         if data_df.empty:
             return {"error": "Failed to fetch data from Alpha Vantage. The API returned no data."}
 
-        print(f"--- [DEBUG] Fetched {len(data_df)} total earnings events ---")
-
-        # Filter the DataFrame for the specific ticker
         earnings_data = data_df[data_df['symbol'] == ticker.upper()]
         
         if earnings_data.empty:
@@ -91,5 +99,4 @@ def get_earnings_calendar(ticker: str, horizon: str = "3month") -> dict:
         return earnings_data.to_dict(orient='records')
         
     except Exception as e:
-        print(f"--- [DEBUG] An unexpected error occurred: {e} ---")
         return {"error": f"An unexpected error occurred while fetching earnings data: {str(e)}"}

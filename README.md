@@ -139,6 +139,19 @@ GET /api/v1/data/ohlcv/{ticker}
   ```bash
   curl http://localhost:8000/api/v1/data/ohlcv/MSFT
   ```
+#### **Get Earnings Calendar from Alpha Vantage**
+
+```http
+GET /api/v1/data/earnings/{ticker}
+```
+
+* Retrieves the upcoming earnings calendar for the given ticker using the Alpha Vantage API key.
+* Example:
+
+  ```bash
+  curl http://localhost:8000/api/v1/data/earnings/AAPL
+  ```
+  
 
 ### 🔍 Database Queries
 
