@@ -6,7 +6,7 @@
 ---
 <p align="center">
   <a href="doc/Architecture-diagram.png">
-    <img src="doc/Architecture-diagram.png" alt="Architecture Diagram" width="300"/>
+    <img src="doc/Architecture-diagram.svg" alt="Architecture Diagram" width="300"/>
   </a>
 </p>
 
