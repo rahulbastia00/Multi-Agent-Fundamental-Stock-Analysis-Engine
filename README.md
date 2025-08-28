@@ -4,6 +4,11 @@
 *A robust, scalable API for fetching, storing, and analyzing financial data. This project serves as the foundational data layer for a multi-agent system designed for automated stock analysis and insights.*
 
 ---
+<p align="center">
+  <a href="doc/Architecture-diagram.png">
+    <img src="doc/Architecture-diagram.png" alt="Architecture Diagram" width="1000"/>
+  </a>
+</p>
 
 ## 🚀 Features
 
